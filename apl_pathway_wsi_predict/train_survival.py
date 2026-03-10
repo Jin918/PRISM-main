@@ -1,7 +1,6 @@
 import os
 import math
 import argparse
-import sys
 import shutil
 import random
 import numpy as np
@@ -12,14 +11,13 @@ import torch.optim as optim
 import torch.optim.lr_scheduler as lr_scheduler
 from torch.utils.tensorboard import SummaryWriter
 from torchinfo import summary
+from torch.nn import DataParallel
 
-from regularization import Regularization
 from wsi_gene_dataset import MyDataSet as WSI_Gene_DataSet
 from vit_model_gene_wsi_concat import my_model as create_model_wsi_gene
 from vit_model_gene_wsi_concat_no_contrastive_loss import my_model as create_model_wsi_gene_no_contrastive_loss
 from vit_model_one_cls import my_model as create_model_wsi
 from utils_cox import train_one_epoch, evaluate
-from torch.nn import DataParallel
 from gene_only import my_gene_only_model
 
 
@@ -65,7 +63,7 @@ def is_full_checkpoint(obj):
 
 def load_surv_txt(path):
     """
-    读取你的 cox train/val txt：每行至少包含 [id, futime, fustat]
+    读取 cox train/val txt：每行至少包含 [id, futime, fustat]
     fustat: 1=event, 0=censored
     """
     times = []
@@ -112,7 +110,7 @@ def main(args):
             args.cox_train_path,
             mode="train",
             train_flag=args.train_flag,
-            view_seed=args.view_seed, 
+            view_seed=args.view_seed,
         )
         print("train patient count: {}".format(str(len(train_dataset))))
 
@@ -122,7 +120,7 @@ def main(args):
             args.cox_val_path,
             mode="valid",
             train_flag=args.train_flag,
-            view_seed=args.view_seed, 
+            view_seed=args.view_seed,
         )
         print("valid patient count: {}".format(str(len(val_dataset))))
 
@@ -149,12 +147,12 @@ def main(args):
             collate_fn=train_dataset.collate_fn,
         )
 
-        
+        # 单独构造一个“确定性”的 train-eval dataset（mode="valid"）
         train_dataset_eval = WSI_Gene_DataSet(
             args.wsi_train_feat_dir,
             args.gene_train_feat_dir,
             args.cox_train_path,
-            mode="valid",                 
+            mode="valid",
             train_flag=args.train_flag,
             view_seed=args.view_seed,
         )
@@ -180,48 +178,6 @@ def main(args):
         )
 
         # -------------------------
-        # External eval loader (optional)
-        # -------------------------
-        ext_loader = None
-        if args.ext_eval:
-            ext_txt = args.cox_ext_path.strip()
-            wsi_ext_dir = args.wsi_ext_feat_dir.strip() if args.wsi_ext_feat_dir else ""
-            gene_ext_dir = args.gene_ext_feat_dir.strip() if args.gene_ext_feat_dir else ""
-
-            need_wsi = (args.train_flag in (0, 1))
-            need_gene = (args.train_flag in (0, 2))
-
-            assert ext_txt and os.path.exists(ext_txt), f"cox_ext_path not found: {ext_txt}"
-            if need_wsi:
-                assert wsi_ext_dir and os.path.exists(wsi_ext_dir), f"wsi_ext_feat_dir not found: {wsi_ext_dir}"
-            if need_gene:
-                assert gene_ext_dir and os.path.exists(gene_ext_dir), f"gene_ext_feat_dir not found: {gene_ext_dir}"
-
-            # 传占位，避免 dataset 内部访问 None
-            wsi_dir_pass = wsi_ext_dir if need_wsi else args.wsi_valid_feat_dir
-            gene_dir_pass = gene_ext_dir if need_gene else args.gene_valid_feat_dir
-
-            ext_dataset = WSI_Gene_DataSet(
-                wsi_dir_pass,
-                gene_dir_pass,
-                ext_txt,
-                mode="valid",
-                train_flag=args.train_flag,
-                view_seed=args.view_seed, 
-            )
-            print("external patient count: {}".format(str(len(ext_dataset))))
-
-            ext_loader = torch.utils.data.DataLoader(
-                ext_dataset,
-                batch_size=batch_size,
-                shuffle=False,
-                pin_memory=True,
-                num_workers=nw,
-                drop_last=False,
-                collate_fn=ext_dataset.collate_fn,
-            )
-
-        # -------------------------
         # Build model
         # -------------------------
         model_dpr = args.dpr
@@ -232,7 +188,7 @@ def main(args):
         proto_tau = float(getattr(args, "proto_tau", 0.07))
         use_apl = (proto_k > 0)
 
-        # proto_k<=0 时强制把 APL 正则清零，避免“关APL但loss还加正则”
+        # proto_k<=0 时强制把 APL 正则清零
         if not use_apl:
             args.lambda_div = 0.0
             args.lambda_bal = 0.0
@@ -399,7 +355,7 @@ def main(args):
         # Optimizer / Scheduler / Criterion
         # -------------------------
         pg = [p for p in model.parameters() if p.requires_grad]
-        regular_loss = None  # 你目前没启用 Regularization，这里保持不动
+        regular_loss = None
 
         optimizer = optim.AdamW(pg, lr=args.lr, weight_decay=args.weight_decay)
 
@@ -423,21 +379,18 @@ def main(args):
         criterion = torch.nn.BCEWithLogitsLoss().to(device)
 
         # -------------------------
-        # Helper: dump best preds (train/valid/test) with sid
+        # Helper: dump best preds (train/valid) with sid
         # -------------------------
         def dump_best_preds(epoch_idx: int):
             """
             在 best-val epoch 触发：
               - pred_train_best.tsv
               - pred_valid_best.tsv
-              - pred_test_best.tsv (if ext_loader)
             """
             out_train = os.path.join(args.log_dir, "pred_train_best.tsv")
             out_valid = os.path.join(args.log_dir, "pred_valid_best.tsv")
-            out_test = os.path.join(args.log_dir, "pred_test_best.tsv")
             out_ep = os.path.join(args.log_dir, "best_val_epoch.txt")
 
-            # train (no shuffle)
             evaluate(
                 model=model,
                 topK=args.topK,
@@ -451,7 +404,6 @@ def main(args):
                 contrastive_loss_flag=args.contrastive_loss_flag,
                 lambda_div=args.lambda_div,
                 lambda_bal=args.lambda_bal,
-                # no ROC for dump
                 train_times_ipcw=None,
                 train_events_ipcw=None,
                 roc_times=None,
@@ -459,7 +411,6 @@ def main(args):
                 save_pred_path=out_train,
             )
 
-            # valid
             evaluate(
                 model=model,
                 topK=args.topK,
@@ -480,32 +431,10 @@ def main(args):
                 save_pred_path=out_valid,
             )
 
-            # test/external (optional)
-            if ext_loader is not None:
-                evaluate(
-                    model=model,
-                    topK=args.topK,
-                    criterion=criterion,
-                    data_loader=ext_loader,
-                    epoch=epoch_idx,
-                    json_path=os.path.join(args.log_dir, "external_valid_log.txt"),
-                    split_name="test",
-                    reg_loss=regular_loss,
-                    train_flag=args.train_flag,
-                    contrastive_loss_flag=args.contrastive_loss_flag,
-                    lambda_div=args.lambda_div,
-                    lambda_bal=args.lambda_bal,
-                    train_times_ipcw=None,
-                    train_events_ipcw=None,
-                    roc_times=None,
-                    save_roc_path=None,
-                    save_pred_path=out_test,
-                )
-
             with open(out_ep, "w") as f:
                 f.write(str(epoch_idx + 1) + "\n")
 
-            print(f"[DUMP] best preds saved: {out_train}, {out_valid}" + (f", {out_test}" if ext_loader is not None else ""), flush=True)
+            print(f"[DUMP] best preds saved: {out_train}, {out_valid}", flush=True)
 
         # -------------------------
         # Train loop
@@ -514,7 +443,6 @@ def main(args):
         model_file = open(save_name_txt, "a" if start_epoch > 0 else "w")
 
         for epoch in range(start_epoch, args.epochs):
-            test_str = ""
             do_roc = ((epoch + 1) % int(args.roc_every) == 0)
             save_roc_path = os.path.join(args.log_dir, f"tdroc_epoch{epoch+1:03d}.png") if do_roc else None
             roc_times_pass = roc_times if do_roc else None
@@ -548,78 +476,12 @@ def main(args):
                 contrastive_loss_flag=args.contrastive_loss_flag,
                 lambda_div=args.lambda_div,
                 lambda_bal=args.lambda_bal,
-                # ---- TD-ROC/IPCW ----
                 train_times_ipcw=train_times_ipcw,
                 train_events_ipcw=train_events_ipcw,
                 roc_times=roc_times_pass,
                 save_roc_path=save_roc_path,
-                # 这里不强制每轮导出 pred；best 时再导出
                 save_pred_path=None,
             )
-
-            # -------------------------
-            # External evaluation (TEST ONLY) — 按 ext_every 频率跑
-            # -------------------------
-            if (ext_loader is not None) and ((epoch + 1) % int(args.ext_every) == 0):
-                ext_do_roc = do_roc
-                ext_save_roc_path = os.path.join(args.log_dir, f"external_tdroc_epoch{epoch+1:03d}.png") if ext_do_roc else None
-                ext_roc_times_pass = roc_times if ext_do_roc else None
-
-                ext_json_path = os.path.join(args.log_dir, "external_valid_log.txt")
-
-                ext_loss, ext_cox_acc, ext_p_value, ext_c_index, ext_tdroc = evaluate(
-                    model=model,
-                    topK=args.topK,
-                    criterion=criterion,
-                    data_loader=ext_loader,
-                    epoch=epoch,
-                    json_path=ext_json_path,
-                    split_name="test",
-                    reg_loss=regular_loss,
-                    train_flag=args.train_flag,
-                    contrastive_loss_flag=args.contrastive_loss_flag,
-                    lambda_div=args.lambda_div,
-                    lambda_bal=args.lambda_bal,
-                    # ---- TD-ROC/IPCW ----
-                    train_times_ipcw=train_times_ipcw,
-                    train_events_ipcw=train_events_ipcw,
-                    roc_times=ext_roc_times_pass,
-                    save_roc_path=ext_save_roc_path,
-                    save_pred_path=None,
-                )
-
-                tb_writer.add_scalar("ext_loss", ext_loss, epoch)
-                tb_writer.add_scalar("ext_cox_acc", ext_cox_acc, epoch)
-                tb_writer.add_scalar("ext_p_value", ext_p_value, epoch)
-                tb_writer.add_scalar("ext_c_index", ext_c_index, epoch)
-
-                ext_auc_str = ""
-                if ext_tdroc is not None:
-                    for y in args.roc_years:
-                        t = float(y) * float(args.days_per_year)
-                        auc = ext_tdroc.get(t, {}).get("auc", float("nan"))
-                        tb_writer.add_scalar(f"ext_auc_{y}y", auc, epoch)
-                        ext_auc_str += f" extAUC{y}y={auc:.3f}"
-
-                test_str = (
-                    f" | test: loss={ext_loss:.4f} acc={ext_cox_acc:.4f} "
-                    f"cindex={ext_c_index:.4f} p={ext_p_value:.3g}{ext_auc_str}"
-                )
-
-                print(
-                    f"[External @Epoch {epoch+1:03d}] "
-                    f"loss={ext_loss:.4f} acc={ext_cox_acc:.4f} "
-                    f"cindex={ext_c_index:.4f} p={ext_p_value:.3g}{ext_auc_str}",
-                    flush=True
-                )
-
-                model_file.write(
-                    f"External-Epoch-{epoch} : external loss : {ext_loss} ; external cox acc : {ext_cox_acc}"
-                    f" ; external p value : {ext_p_value} ; external c index : {ext_c_index}\n"
-                )
-                if ext_tdroc is not None:
-                    model_file.write(f"External-TDROC-Epoch-{epoch} :" + ext_auc_str + "\n")
-                model_file.flush()
 
             # -------------------------
             # Log time-dependent AUCs
@@ -648,8 +510,7 @@ def main(args):
             msg = (
                 f"[Epoch {epoch+1:03d}/{args.epochs:03d}] "
                 f"train: loss={train_loss:.4f} acc={train_cox_acc:.4f} cindex={train_c_index:.4f} p={train_p_value:.3g} | "
-                f"val: loss={val_loss:.4f} acc={val_cox_acc:.4f} cindex={val_c_index:.4f} p={val_p_value:.3g}{auc_str}"
-                f"{test_str} | "
+                f"val: loss={val_loss:.4f} acc={val_cox_acc:.4f} cindex={val_c_index:.4f} p={val_p_value:.3g}{auc_str} | "
                 f"lr={optimizer.param_groups[0]['lr']:.2e}"
             )
             print(msg, flush=True)
@@ -669,7 +530,7 @@ def main(args):
             model_file.flush()
 
             # ---------
-            # Save legacy weights (always latest)
+            # Save latest legacy weights
             # ---------
             torch.save(unwrap_model(model).state_dict(), os.path.join(args.log_dir, "model-latest.pth"))
 
@@ -681,7 +542,7 @@ def main(args):
             improved_sum = val_sum > float(best_sum_cindex)
 
             # ---------
-            # Update bests + save legacy best weights
+            # Update bests + save best weights
             # ---------
             if improved_val:
                 best_val_path = os.path.join(args.log_dir, "model-val-best.pth")
@@ -695,7 +556,6 @@ def main(args):
                 model_file.write(f"save best val c_index {val_c_index} checkpoint\n")
                 model_file.flush()
 
-                # ✅ 关键：在 best-val 触发时导出 train/valid/test 的 pred（带 sid）
                 dump_best_preds(epoch)
 
             if improved_sum:
@@ -716,7 +576,7 @@ def main(args):
             full_ckpt = {
                 "epoch": epoch,
                 "total_epochs": int(args.epochs),
-                "model": unwrap_model(model).state_dict(),  # no 'module.' prefix
+                "model": unwrap_model(model).state_dict(),
                 "optimizer": optimizer.state_dict(),
                 "scheduler": scheduler.state_dict(),
                 "best_val_cindex": float(best_val_cindex),
@@ -736,7 +596,6 @@ def main(args):
             # -------------------------
             save_every = max(1, int(getattr(args, "save_every", 1)))
             if (getattr(args, "save_epoch_ckpt", False) or getattr(args, "save_epoch_weights", False)) and (epoch % save_every == 0):
-
                 ep_tag = f"{epoch:03d}"  # 0-based: 000..017
 
                 if getattr(args, "save_epoch_ckpt", False):
@@ -764,9 +623,9 @@ if __name__ == "__main__":
     parser.add_argument("--epochs", type=int, default=40)
     parser.add_argument("--topK", type=int, default=2)
     parser.add_argument("--batch_size", type=int, default=128)
-    parser.add_argument("--lr", type=float, default=4e-3)
-    parser.add_argument("--lrf", type=float, default=1e-2)
-    parser.add_argument("--weight_decay", type=float, default=1e-5)
+    parser.add_argument("--lr", type=float, default=5e-4)
+    parser.add_argument("--lrf", type=float, default=3e-4)
+    parser.add_argument("--weight_decay", type=float, default=1e-4)
 
     parser.add_argument(
         "--log_dir",
@@ -810,11 +669,11 @@ if __name__ == "__main__":
 
     # APL
     parser.add_argument("--proto_k", type=int, default=4)
-    parser.add_argument("--proto_tau", type=float, default=0.2)
-    parser.add_argument("--lambda_div", type=float, default=0.01)
-    parser.add_argument("--lambda_bal", type=float, default=0.0)
+    parser.add_argument("--proto_tau", type=float, default=0.1)
+    parser.add_argument("--lambda_div", type=float, default=0.0)
+    parser.add_argument("--lambda_bal", type=float, default=0.1)
 
-    parser.add_argument("--wsi_block", type=int, default=1, help="num transformer blocks for WSI branch")
+    parser.add_argument("--wsi_block", type=int, default=2, help="num transformer blocks for WSI branch")
     parser.add_argument("--gene_block", type=int, default=1, help="num transformer blocks for Gene branch")
     parser.add_argument("--dpr", type=float, default=0.3, help="drop_path_rate (stochastic depth), passed as dpr")
 
@@ -839,33 +698,13 @@ if __name__ == "__main__":
         help="compute td-ROC every N epochs (reduce overhead)",
     )
 
-    # External evaluation (TEST ONLY)
-    parser.add_argument("--ext_eval", action="store_true", help="run external evaluation during training (TEST ONLY)")
-    parser.add_argument("--ext_every", type=int, default=1, help="run external eval every N epochs")
-    parser.add_argument(
-        "--cox_ext_path",
-        type=str,
-        default="/Pathology_data_2/UCEC_external/cox/external.txt",
-        help="external cox txt path (id time event)",
-    )
-    parser.add_argument(
-        "--wsi_ext_feat_dir",
-        type=str,
-        default="/Pathology_data_2/UCEC_external/ucec_whole_slide_select_feat_txt_dino",
-        help="external wsi feature dir",
-    )
-    parser.add_argument(
-        "--gene_ext_feat_dir",
-        type=str,
-        default="/Pathology_data_2/UCEC_external/gene/all",
-        help="external gene npy dir (needed if train_flag==0)",
-    )
-
     parser.add_argument("--save_epoch_ckpt", action="store_true",
-                    help="save full checkpoint per epoch as ckpt-epoch-XXX.pt (XXX is 0-based epoch)")
+                        help="save full checkpoint per epoch as ckpt-epoch-XXX.pt (XXX is 0-based epoch)")
     parser.add_argument("--save_epoch_weights", action="store_true",
                         help="save model weights per epoch as model-epoch-XXX.pth (XXX is 0-based epoch)")
     parser.add_argument("--save_every", type=int, default=1,
                         help="save per-epoch checkpoint/weights every N epochs")
+
     opt = parser.parse_args()
+    main(opt)
     main(opt)
