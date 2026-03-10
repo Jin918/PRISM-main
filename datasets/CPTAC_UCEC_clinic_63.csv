@@ -1,0 +1,64 @@
+ID,Age,Histologic_Grade,FIGO_Group,Tumor_Stage_Pathological,Tumor_Necrosis,LVSI,Subtype,Myometrial_Invasion,Radiation_Therapy,Residual_Tumor,RFS.time,RFS,OS.time,OS,PFS.time,PFS
+C3L-00006,64,G1,I/II,Stage I,Not identified,1,UCEC_MSI,<50%,No,R0,24.57,0,24.57,0,24.57,0
+C3L-00008,58,G1,I/II,Stage I,Not identified,0,UCEC_MSI,<50%,No,R0,29.93,0,29.93,0,29.93,0
+C3L-00032,50,G2,I/II,Stage I,Not identified,0,UCEC_CN_LOW,<50%,Yes,R0,57,0,57,0,57,0
+C3L-00098,63,G3,I/II,Stage I,Not identified,,UCEC_CN_HIGH,<50%,No,R0,58.27,0,58.27,0,58.27,0
+C3L-00136,50,G1,I/II,Stage I,Not identified,0,UCEC_CN_LOW,<50%,No,R0,59.8,0,59.8,0,59.8,0
+C3L-00143,69,G1,I/II,Stage I,Not identified,0,UCEC_MSI,Unknown,No,R0,56.93,0,56.93,0,56.93,0
+C3L-00145,59,G1,I/II,Stage I,Not identified,0,UCEC_CN_LOW,<50%,No,R0,59.97,0,59.97,0,59.97,0
+C3L-00156,56,G1,I/II,Stage I,Not identified,0,UCEC_POLE,<50%,No,R0,59.2,0,59.2,0,59.2,0
+C3L-00161,46,G2,I/II,Stage I,Not identified,1,UCEC_MSI,>=50%,Yes,RX,45.63,1,59.17,0,45.63,1
+C3L-00362,38,G1,I/II,Stage I,Not identified,0,UCEC_CN_HIGH,Unknown,No,R0,58.17,0,58.17,0,58.17,0
+C3L-00413,60,G2,I/II,Stage II,Not identified,0,UCEC_CN_LOW,<50%,Yes,R0,58.9,0,58.9,0,58.9,0
+C3L-00449,59,G2,I/II,Stage I,Not identified,0,UCEC_CN_LOW,<50%,Yes,R0,58.3,0,58.3,0,58.3,0
+C3L-00563,62,G1,I/II,Stage I,Not identified,0,UCEC_CN_LOW,<50%,No,R0,59.5,0,59.5,0,59.5,0
+C3L-00586,50,G1,I/II,Stage III,Present,1,UCEC_POLE,<50%,Yes,RX,60.03,0,60.03,0,60.03,0
+C3L-00601,57,G1,I/II,Stage I,Not identified,0,UCEC_POLE,<50%,No,R0,57.4,0,57.4,0,57.4,0
+C3L-00605,73,G2,I/II,Stage I,Not identified,0,UCEC_CN_LOW,<50%,Yes,R0,59.83,0,59.83,0,59.83,0
+C3L-00767,56,G2,I/II,Stage I,Not identified,0,UCEC_CN_LOW,<50%,No,R0,13.97,0,13.97,0,13.97,0
+C3L-00769,56,G2,I/II,Stage I,Not identified,0,UCEC_CN_LOW,>=50%,Yes,R0,50.23,0,50.23,0,50.23,0
+C3L-00780,69,G2,I/II,Stage I,Not identified,0,UCEC_CN_LOW,Unknown,No,RX,35.1,0,35.1,0,35.1,0
+C3L-00781,48,G3,I/II,Stage II,Not identified,1,UCEC_MSI,>=50%,Yes,R0,50.63,0,50.63,0,50.63,0
+C3L-00905,64,G3,I/II,Stage III,Not identified,1,UCEC_CN_HIGH,>=50%,Yes,R0,58.3,0,58.3,0,58.3,0
+C3L-00918,68,G1,I/II,Stage I,Not identified,1,UCEC_MSI,<50%,No,R0,34.73,1,39.73,1,34.73,1
+C3L-00932,67,G2,I/II,Stage I,Not identified,0,UCEC_CN_LOW,Unknown,No,R0,50.07,0,50.07,0,50.07,0
+C3L-00938,53,G2,I/II,Stage I,Present,1,UCEC_CN_LOW,>=50%,Yes,RX,52.03,0,52.03,0,52.03,0
+C3L-00942,64,G1,I/II,Stage I,Not identified,0,UCEC_CN_LOW,<50%,No,R0,46.07,0,46.07,0,46.07,0
+C3L-00946,64,G1,I/II,Stage I,Not identified,1,UCEC_MSI,>=50%,Yes,R0,33.17,0,33.17,0,33.17,0
+C3L-00947,71,G2,I/II,Stage I,Present,0,UCEC_CN_LOW,Unknown,No,R0,47.53,0,47.53,0,47.53,0
+C3L-00949,64,G1,I/II,Stage I,Present,1,UCEC_CN_LOW,<50%,Yes,RX,50.73,0,50.73,0,50.73,0
+C3L-00961,59,G1,I/II,Stage I,Not identified,0,UCEC_CN_LOW,<50%,No,R0,43,0,43,1,43,1
+C3L-00963,59,G3,I/II,Stage I,Not identified,1,UCEC_CN_HIGH,>=50%,Yes,R0,27,0,27,0,27,0
+C3L-01248,42,G1,I/II,Stage I,Not identified,0,UCEC_CN_LOW,>=50%,Yes,RX,26.6,0,26.6,0,26.6,0
+C3L-01249,65,G2,I/II,Stage I,Not identified,0,UCEC_CN_LOW,<50%,No,RX,50.57,0,50.57,0,50.57,0
+C3L-01252,76,G1,I/II,Stage I,Not identified,0,UCEC_CN_LOW,<50%,No,RX,52.7,0,52.7,0,52.7,0
+C3L-01253,77,G2,I/II,Stage I,Not identified,1,UCEC_CN_HIGH,>=50%,Yes,RX,51.07,0,51.07,0,51.07,0
+C3L-01256,75,G1,I/II,Stage I,Not identified,0,UCEC_CN_LOW,>=50%,No,RX,47.83,0,47.83,0,47.83,0
+C3L-01257,71,G1,I/II,Stage I,Not identified,0,UCEC_MSI,<50%,No,R0,20.1,0,20.1,0,20.1,0
+C3L-01275,65,G2,I/II,Stage I,Present,1,UCEC_MSI,>=50%,Yes,RX,21.9,1,49.5,0,21.9,1
+C3L-01282,64,G3,I/II,Stage I,Not identified,1,UCEC_MSI,<50%,Yes,R0,59.47,0,59.47,0,59.47,0
+C3L-01284,49,G1,I/II,Stage I,Not identified,0,Unknown,Unknown,No,R0,11.9,0,11.9,0,11.9,0
+C3L-01304,68,G1,I/II,Stage I,Not identified,0,UCEC_CN_LOW,<50%,No,R0,62.07,0,62.07,0,62.07,0
+C3L-01307,74,G3,I/II,Stage IV,Not identified,1,UCEC_CN_HIGH,<50%,No,RX,6.83,0,6.83,1,6.83,1
+C3L-01312,56,G1,I/II,Stage I,Not identified,0,UCEC_CN_LOW,<50%,No,R0,59.47,0,59.47,0,59.47,0
+C3L-01744,62,G2,I/II,Stage I,Not identified,0,UCEC_MSI,<50%,Yes,RX,31.77,0,31.77,0,31.77,0
+C3N-00324,66,G2,I/II,Stage II,Not identified,0,UCEC_CN_LOW,>=50%,Yes,R0,23.67,0,23.67,0,23.67,0
+C3N-00326,45,G1,I/II,Stage I,Not identified,0,UCEC_CN_LOW,Unknown,No,R0,22.73,0,22.73,0,22.73,0
+C3N-00328,62,G3,I/II,Stage I,Not identified,0,UCEC_POLE,>=50%,No,R0,23.23,0,23.23,0,23.23,0
+C3N-00339,45,G2,I/II,Stage I,Not identified,0,UCEC_CN_HIGH,<50%,Yes,R0,23.37,0,23.37,0,23.37,0
+C3N-00377,64,G2,I/II,Stage I,Present,0,UCEC_MSI,<50%,Yes,R0,23.57,0,23.57,0,23.57,0
+C3N-00379,41,G2,I/II,Stage I,Not identified,0,UCEC_CN_LOW,<50%,Yes,R0,21.93,0,21.93,0,21.93,0
+C3N-00383,61,G1,I/II,Stage I,Not identified,0,UCEC_CN_LOW,<50%,No,R0,26.33,0,26.33,0,26.33,0
+C3N-00386,44,G1,I/II,Stage I,Not identified,0,UCEC_CN_LOW,<50%,Yes,R0,22.43,0,22.43,0,22.43,0
+C3N-00389,62,G2,I/II,Stage I,Not identified,0,UCEC_MSI,>=50%,Yes,R0,22.37,0,22.37,0,22.37,0
+C3N-00729,86,G2,I/II,Stage I,Not identified,0,UCEC_CN_LOW,>=50%,Yes,RX,11.57,1,29.1,0,11.57,1
+C3N-00743,53,G2,I/II,Stage I,Not identified,0,UCEC_MSI,<50%,No,RX,19.47,0,19.47,0,19.47,0
+C3N-00848,66,G2,I/II,Stage I,Present,0,UCEC_CN_LOW,<50%,Yes,R0,21.93,0,21.93,0,21.93,0
+C3N-00850,65,G2,I/II,Stage I,Not identified,0,UCEC_MSI,<50%,Yes,R0,22.73,0,22.73,0,22.73,0
+C3N-00880,61,G2,I/II,Stage I,Not identified,0,UCEC_MSI,<50%,Yes,R0,58.57,0,58.57,0,58.57,0
+C3N-01211,59,G2,I/II,Stage II,Not identified,1,UCEC_MSI,>=50%,Yes,R0,21.23,1,24.67,0,21.23,1
+C3N-01217,58,G1,I/II,Stage I,Not identified,0,UCEC_CN_LOW,>=50%,Yes,R0,23.83,0,23.83,0,23.83,0
+C3N-01267,57,G2,I/II,Stage III,Not identified,1,UCEC_CN_LOW,>=50%,Yes,R0,22.1,0,22.1,0,22.1,0
+C3N-01510,53,G2,I/II,Stage II,Not identified,1,UCEC_CN_LOW,>=50%,Yes,RX,36.67,0,36.67,0,36.67,0
+C3N-01520,69,G2,I/II,Stage I,Not identified,0,UCEC_MSI,<50%,Yes,R0,9.57,0,9.57,1,9.57,1
+C3N-01521,75,G3,I/II,Stage I,Not identified,0,UCEC_CN_HIGH,<50%,Yes,R0,24.27,0,24.27,0,24.27,0
