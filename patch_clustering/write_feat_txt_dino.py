@@ -301,29 +301,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-
-# -----------------------------------------------------------------------------
-# Example usage
-# -----------------------------------------------------------------------------
-#
-# TCGA example
-#
-# mkdir -p /Pathology_data_2/UCEC_new/TCGA/ucec_whole_slide_select_feat_txt_dino_full_ep10_ge0p1
-#
-# python write_feat_txt_dino.py \
-#   --feature_txt_path /Pathology_data_2/UCEC_new/TCGA/ucec_all_dino_feat_txt_full_ep10_ge0p1 \
-#   --result_txt_path /Pathology_data_2/UCEC_new/TCGA/ucec_whole_slide_select_txt_dino_full_ep10_ge0p1 \
-#   --write_txt_dir /Pathology_data_2/UCEC_new/TCGA/ucec_whole_slide_select_feat_txt_dino_full_ep10_ge0p1 \
-#   --process_count 10
-#
-#
-# External example
-#
-# mkdir -p /Pathology_data_2/UCEC_external/ucec_whole_slide_select_feat_txt_dino_light_8
-#
-# python write_feat_txt_dino.py \
-#   --feature_txt_path /Pathology_data_2/UCEC_external/ucec_all_dino_feat_txt_light_8 \
-#   --result_txt_path /Pathology_data_2/UCEC_external/ucec_whole_slide_select_txt_dino_light_8 \
-#   --write_txt_dir /Pathology_data_2/UCEC_external/ucec_whole_slide_select_feat_txt_dino_light_8 \
-#   --process_count 10
