@@ -1,0 +1,35 @@
+# SFigure7
+
+Supplementary Figure 7 panel wrappers
+
+## Builder
+
+- kind: python
+- script: /results/supplementary_figures/SFigure7_full_prototype_interpretation/make_supplementary_figure_7_full_prototype_interpretation.py
+
+## Notes
+
+The full-prototype-interpretation build already writes panel-resolved outputs, so the Final-tif layer only adds manuscript-facing per-panel wrappers.
+
+## Panels
+
+- A: Prototype-wise top pathway ranking
+  wrapper: panel_A.py
+  builder: /results/supplementary_figures/SFigure7_full_prototype_interpretation/make_supplementary_figure_7_full_prototype_interpretation.py
+  origin: /results/supplementary_figures/SFigure7_full_prototype_interpretation/make_supplementary_figure_7_full_prototype_interpretation.py
+  outputs: /results/supplementary_figures/SFigure7_full_prototype_interpretation/Supplementary_Figure_7_full_prototype_interpretation_panel_A.pdf, /results/supplementary_figures/SFigure7_full_prototype_interpretation/Supplementary_Figure_7_full_prototype_interpretation_panel_A.png
+- B: TCGA within-case prototype spatial localization
+  wrapper: panel_B.py
+  builder: /results/supplementary_figures/SFigure7_full_prototype_interpretation/make_supplementary_figure_7_full_prototype_interpretation.py
+  origin: /results/supplementary_figures/SFigure7_full_prototype_interpretation/make_supplementary_figure_7_full_prototype_interpretation.py
+  outputs: /results/supplementary_figures/SFigure7_full_prototype_interpretation/Supplementary_Figure_7_full_prototype_interpretation_panel_B.pdf, /results/supplementary_figures/SFigure7_full_prototype_interpretation/Supplementary_Figure_7_full_prototype_interpretation_panel_B.png
+- C: CPTAC within-case prototype spatial localization
+  wrapper: panel_C.py
+  builder: /results/supplementary_figures/SFigure7_full_prototype_interpretation/make_supplementary_figure_7_full_prototype_interpretation.py
+  origin: /results/supplementary_figures/SFigure7_full_prototype_interpretation/make_supplementary_figure_7_full_prototype_interpretation.py
+  outputs: /results/supplementary_figures/SFigure7_full_prototype_interpretation/Supplementary_Figure_7_full_prototype_interpretation_panel_C.pdf, /results/supplementary_figures/SFigure7_full_prototype_interpretation/Supplementary_Figure_7_full_prototype_interpretation_panel_C.png
+- D: Transparent audit of excluded P4
+  wrapper: panel_D.py
+  builder: /results/supplementary_figures/SFigure7_full_prototype_interpretation/make_supplementary_figure_7_full_prototype_interpretation.py
+  origin: /results/supplementary_figures/SFigure7_full_prototype_interpretation/make_supplementary_figure_7_full_prototype_interpretation.py
+  outputs: /results/supplementary_figures/SFigure7_full_prototype_interpretation/Supplementary_Figure_7_full_prototype_interpretation_panel_D.pdf, /results/supplementary_figures/SFigure7_full_prototype_interpretation/Supplementary_Figure_7_full_prototype_interpretation_panel_D.png
