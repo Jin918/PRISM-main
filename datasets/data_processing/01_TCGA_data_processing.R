@@ -451,6 +451,7 @@ if(T){
   cat("group_list:",table(group_list),"\n") #35    539
   
   clin_ids <- unique(EC_early_df_312$ID)
+  expr_ids <- colnames(exp_TCGA_fpkm)
   common_ids <- intersect(expr_ids, clin_ids);length(common_ids) #306
   exp_TCGA_fpkm_306 <- exp_TCGA_fpkm[, common_ids, drop = FALSE]
   EC_early_df_306 <- EC_early_df_312[match(common_ids, EC_early_df_312$ID), , drop = FALSE]
