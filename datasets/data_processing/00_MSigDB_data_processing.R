@@ -80,33 +80,44 @@ dim(mat_all)
 colnames(mat_all)
 rownames(mat_all)
 
-##filter-TCGA
-## with 01_TCGA_data_processing.R
-length(rownames(mRNAexp_filter))
-pc_genes <- unique(rownames(mRNAexp_filter))
-keep_cols <- intersect(colnames(mat_all), pc_genes)
-sum(is.na(keep_cols))
-dim(mat_all) #236 7336
-mat_all_pc <- mat_all[, keep_cols, drop = FALSE]
-mRNAexp_filter_pathway <- mRNAexp_filter[keep_cols, , drop = FALSE]
-dim(mat_all_pc) #236 6292
-dim(mRNAexp_filter_pathway) #6292  306
-write.csv(mat_all_pc, file.path(msigdb_dir, "MSigDB_2sets_co_genes.csv"))
+saveRDS(
+  mat_all,
+  file.path(msigdb_dir, "MSigDB_2sets_binary_236x7336.rds")
+)
+
+write.csv(
+  mat_all,
+  file.path(msigdb_dir, "MSigDB_2sets_binary_236x7336.csv"),
+  row.names = TRUE
+)
 
 
-##filter-CPTAC
-length(rownames(expr_mat_log_keep))
-pc_genes <- unique(rownames(expr_mat_log_keep))
-length(pc_genes)
-keep_cols <- intersect(rownames(mRNAexp_filter_pathway), pc_genes)
-sum(is.na(keep_cols))
-dim(mat_all)
-mat_all_pc <- mat_all[, keep_cols, drop = FALSE]
-mRNAexp_filter_pathway_ <- expr_mat_log_keep[keep_cols, , drop = FALSE]
-dim(mat_all_pc) #6292
-dim(mRNAexp_filter_pathway_) #6292  306
-
-mat_align <- mat_all_pc[, colSums(mat_all_pc) > 0, drop = FALSE]
-dim(mat_align)
-
+# ##filter-TCGA
+# ## with 01_TCGA_data_processing.R
+# length(rownames(mRNAexp_filter))
+# pc_genes <- unique(rownames(mRNAexp_filter))
+# keep_cols <- intersect(colnames(mat_all), pc_genes)
+# sum(is.na(keep_cols))
+# dim(mat_all) #236 7336
+# mat_all_pc <- mat_all[, keep_cols, drop = FALSE]
+# mRNAexp_filter_pathway <- mRNAexp_filter[keep_cols, , drop = FALSE]
+# dim(mat_all_pc) #236 6292
+# dim(mRNAexp_filter_pathway) #6292  306
+# write.csv(mat_all_pc, file.path(msigdb_dir, "MSigDB_2sets_co_genes.csv"))
+# 
+# 
+# ##filter-CPTAC
+# length(rownames(expr_mat_log_keep))
+# pc_genes <- unique(rownames(expr_mat_log_keep))
+# length(pc_genes)
+# keep_cols <- intersect(rownames(mRNAexp_filter_pathway), pc_genes)
+# sum(is.na(keep_cols))
+# dim(mat_all)
+# mat_all_pc <- mat_all[, keep_cols, drop = FALSE]
+# mRNAexp_filter_pathway_ <- expr_mat_log_keep[keep_cols, , drop = FALSE]
+# dim(mat_all_pc) #6292
+# dim(mRNAexp_filter_pathway_) #6292  306
+# 
+# mat_align <- mat_all_pc[, colSums(mat_all_pc) > 0, drop = FALSE]
+# dim(mat_align)
 
